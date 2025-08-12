@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Responsive Image Gallery</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f5f5f5;
+    }
+
+    h1 {
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    .gallery {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      padding: 10px;
+      justify-content: center;
+    }
+
+    .gallery img {
+      width: 100%;
+      height: auto;
+      display: block;
+      cursor: pointer;
+      border-radius: 5px;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .gallery-item {
+      flex: 1 1 calc(25% - 20px);
+      max-width: calc(25% - 20px);
+    }
+
+    .gallery-item:hover img {
+      transform: scale(1.05);
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    }
+
+    @media (max-width: 992px) {
+      .gallery-item {
+        flex: 1 1 calc(33.33% - 20px);
+        max-width: calc(33.33% - 20px);
+      }
+    }
+
+    @media (max-width: 768px) {
+      .gallery-item {
+        flex: 1 1 calc(50% - 20px);
+        max-width: calc(50% - 20px);
+      }
+    }
+
+    @media (max-width: 480px) {
+      .gallery-item {
+        flex: 1 1 100%;
+        max-width: 100%;
+      }
+    }
+
+    /* Modal Styles */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      padding-top: 60px;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0,0,0,0.9);
+      transition: all 0.3s ease;
+    }
+
+    .modal-content {
+      margin: auto;
+      display: block;
+      max-width: 90%;
+      max-height: 80vh;
+      animation: fadeIn 0.5s ease;
+    }
+
+    @keyframes fadeIn {
+      from {opacity: 0;}
+      to {opacity: 1;}
+    }
+
+    .close, .prev, .next {
+      position: absolute;
+      top: 50%;
+      color: white;
+      font-size: 2rem;
+      padding: 10px;
+      cursor: pointer;
+      user-select: none;
+      transform: translateY(-50%);
+    }
+
+    .close {
+      top: 20px;
+      right: 30px;
+      font-size: 2.5rem;
+    }
+
+    .prev {
+      left: 10px;
+    }
+
+    .next {
+      right: 10px;
+    }
+
+    .close:hover, .prev:hover, .next:hover {
+      color: #ccc;
+    }
+
+    /* Responsive Image Modal */
+    @media (max-width: 768px) {
+      .modal-content {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Responsive Image Gallery</h1>
+
+  <div class="gallery" id="gallery">
+    <!-- Gallery Items -->
+     <div class="gallery-item"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c8/Altja_j%C3%B5gi_Lahemaal.jpg/1200px-Altja_j%C3%B5gi_Lahemaal.jpg" alt="Image 1"></div>
+    <div class="gallery-item"><img src="https://natureconservancy-h.assetsadobe.com/is/image/content/dam/tnc/nature/en/photos/z/u/Zugpsitze_mountain.jpg?crop=0%2C176%2C3008%2C1654&wid=1300&hei=715&scl=2.313846153846154" alt="Image 2"></div>
+    <div class="gallery-item"><img src="https://onetreeplanted.org/cdn/shop/articles/nature_facts_600x.jpg?v=1705008496" alt="Image 3"></div>
+    <div class="gallery-item"><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRTPy-uQYDA74xuvuzEmH8Klu4FDsFlcNVNSw&s" alt="Image 4"></div>
+    <div class="gallery-item"><img src="https://static.vecteezy.com/system/resources/thumbnails/049/855/347/small_2x/nature-background-high-resolution-wallpaper-for-a-serene-and-stunning-view-photo.jpg" alt="Image 5"></div>
+    </div>
+  <!-- Modal -->
+  <div class="modal" id="modal">
+    <span class="close" id="closeBtn">&times;</span>
+    <img class="modal-content" id="modalImage" src="">
+    <span class="prev" id="prevBtn">&#10094;</span>
+    <span class="next" id="nextBtn">&#10095;</span>
+  </div>
+
+  <script>
+    const modal = document.getElementById('modal');
+    const modalImage = document.getElementById('modalImage');
+    const galleryItems = document.querySelectorAll('.gallery-item img');
+    const closeBtn = document.getElementById('closeBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const prevBtn = document.getElementById('prevBtn');
+
+    let currentIndex = 0;
+
+    function openModal(index) {
+      currentIndex = index;
+      modal.style.display = 'block';
+      modalImage.src = galleryItems[index].src;
+    }
+
+    function closeModal() {
+      modal.style.display = 'none';
+    }
+
+    function showNext() {
+      currentIndex = (currentIndex + 1) % galleryItems.length;
+      modalImage.src = galleryItems[currentIndex].src;
+    }
+
+    function showPrev() {
+      currentIndex = (currentIndex - 1 + galleryItems.length) % galleryItems.length;
+      modalImage.src = galleryItems[currentIndex].src;
+    }
+
+    galleryItems.forEach((img, index) => {
+      img.addEventListener('click', () => openModal(index));
+    });
+
+    closeBtn.addEventListener('click', closeModal);
+    nextBtn.addEventListener('click', showNext);
+    prevBtn.addEventListener('click', showPrev);
+
+    // Close modal on outside click
+    window.addEventListener('click', (e) => {
+      if (e.target === modal) closeModal();
+    });
+
+    // Keyboard navigation
+    window.addEventListener('keydown', (e) => {
+      if (modal.style.display === 'block') {
+        if (e.key === 'ArrowRight') showNext();
+        if (e.key === 'ArrowLeft') showPrev();
+        if (e.key === 'Escape') closeModal();
+      }
+    });
+  </script>
+</body>
+</html>
